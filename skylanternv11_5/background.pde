@@ -1,3 +1,5 @@
+// particule background. Voir Nature of code pour la construction.
+
 class Background{
   float x;
   float y;
@@ -17,7 +19,7 @@ class Background{
   Background(float hBackground){
     acceleration = new PVector(-0.02, -0.02);
      velocity = new PVector(random(-1, 1), random(0, -2));
-     H = hBackground +40;
+     H = hBackground +40; // modification de la teinte background/user , a retirer le +40 quand kinect supprimer.
        if (H >360){
            H = H -360;
        }

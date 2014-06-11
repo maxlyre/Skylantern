@@ -1,3 +1,5 @@
+// Particule pour user. Dans background c'est la meme chose.
+
 class Particule{
 
   float x;

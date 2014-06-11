@@ -1,3 +1,5 @@
+// affichage du texte quand en attente
+
 class Text{
   PFont font;
   int opacity = 0;

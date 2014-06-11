@@ -1,23 +1,25 @@
 import processing.serial.*;
 import SimpleOpenNI.*;
 import ddf.minim.*;
-SimpleOpenNI kinect;
+SimpleOpenNI kinect; // Kinect
 
-boolean tracking = false; 
+boolean tracking = false; // kinect
 boolean touch = false;
-ArrayList<User> users;
-int userID; 
+ArrayList<User> users; // Nombre d'utilisateurs, a retirer comme avec la kinect
+int userID;  // same
 float[] lampColor = new float [2];
 int caseColor;
 int nbLantern;
 ArrayList<Background> background1;
-ArrayList<PVector> userMaptab;
-Minim minim;
+ArrayList<PVector> userMaptab; //User avec la kinect
 
-//PImage userMap;---------------------------------------------!
+
+//PImage userMap;---------------------------------------------! Kinect
 int[] userMap;
 PImage userColor;
 
+//------------------------------------Music declaration
+Minim minim;
 AudioPlayer Pbase;
 AudioPlayer Prouge;
 AudioPlayer Pbleu;
@@ -27,6 +29,7 @@ AudioPlayer Pjaune;
 AudioPlayer Pviolet;
 boolean Mteinte = false;
 
+//----------------------Texte
 Text text;
 int textcount = 0;
 
@@ -78,6 +81,8 @@ void setup() {
 
   kinect.alternativeViewPointDepthToImage();
   userMaptab = new ArrayList<PVector>();
+  
+  //--------------------------------------------Background setup
   background1 = new ArrayList<Background>();
 
   //---------------------------------------------------------Musique Setup---------------------------------------------
@@ -93,10 +98,11 @@ void setup() {
   Pjaune = minim.loadFile("jaune.mp3");
   Pbase.loop();
 }
-
+//-------------------Draw
 void draw() {
   background(360, 100, 0);
 
+//------------------------------------Kinect
   kinect.update();
   for (int i=0; i<users.size(); i++) {
     users.get(i).run();
@@ -105,16 +111,18 @@ void draw() {
 
   while (myPort.available () > 0) {
     String inByte = myPort.readStringUntil('\n');
-    if (inByte!= null) {
+    if (inByte!= null) { //regarde si donnée
 
       String data = trim(inByte.replace("\n", ""));  
-      
-      if (data.equals( "A")) {
+        println(data);
+        
+        //regarde quel lantern
+      if (data.equals( "A")) { 
          caseColor =0;
       }else if (data.equals( "B")){
           caseColor = 1;
       }
-      
+      //prend la teinte
       float teintecal= float(data);
       teintecal= map(teintecal, 0, 1, 0, 360);
       int couleur= int(teintecal);
@@ -123,7 +131,7 @@ void draw() {
       else {
         lampColor[caseColor]=couleur;
       }
-
+        //compte les lantern
       if (data.equals( "AT")) {
         nbLantern ++;
         
@@ -141,7 +149,7 @@ void draw() {
       
       if(nbLantern > 0){
         touch= true;
-        
+        //kinect (tableau users).
         for (int i = 0; i < users.size(); i++) {
           users.get(i).over();
       }
@@ -154,7 +162,7 @@ void draw() {
   }
   //lampColor = 15;
 
-  addUserList();
+  addUserList(); // Kinect
 
   //------------------------------------------------Touch-----------------------------------  
 
@@ -162,7 +170,8 @@ void draw() {
     if (Mteinte == false) { 
       playMusique();
     }
-
+    
+        //Kinect------------------------------------------------------------------------
     if (tracking) { //Kinect
       addUserList();
       userImage();
@@ -174,7 +183,7 @@ void draw() {
        users.get(i).addParticle();
        }
     }
-
+      // Background --------------------------------------------------------------------------------
     //add particule
       // background1.add(new Background(45));
      // if(nbLantern == 1){        
@@ -193,6 +202,7 @@ void draw() {
     textcount =1;
   } 
   else {
+    //Texte et musique stop
     text.display(textcount);
     textcount = 0;
     //particules.clear();
@@ -201,7 +211,7 @@ void draw() {
       stopMusique();
     }
   }
-  //----------------Mise à jours particule
+  //----------------Mise à jours particule Background
   for (int i = 0; i <background1.size(); i ++) {
     background1.get(i).move();
     background1.get(i).display();
@@ -211,10 +221,8 @@ void draw() {
     }
   }
   //println("\t\t nb particles : "+particules.size());
-
+  
   frame.setTitle("fps"+round(frameRate));
-  myPort.write('q');
-  keyPressed();
   
  // displayPVector();
 }
@@ -291,7 +299,7 @@ void stopMusique() {
   Mteinte = false;
 }
 
-//Kinect
+//----------------------------------------------------------------------------------------------Kinect fonction
 void userImage()
 {
   userColor = kinect.userImage().get();
@@ -406,26 +414,3 @@ void addUserList() {
      rectMode(CORNER);*/
   }
 
-void keyPressed()
-{
- 
-  switch (key) {
-    case 'q':
-      myPort.write(1);
-      println("ici");
-      break;
-    case 'w':
-      myPort.write(2);
-      break; 
-    case 's':
-      myPort.write(3);
-      break;
-     case 'x':
-      myPort.write(4);
-      break;         
-    case'c':
-      myPort.write(5);
-      break;
-  }
- 
-}

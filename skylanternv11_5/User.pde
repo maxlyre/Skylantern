@@ -1,3 +1,5 @@
+// Class user. En retirant la kinect deviant inutile.
+
 class User {
   
 
