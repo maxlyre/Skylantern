@@ -1,12 +1,15 @@
 import processing.serial.*;
 import ddf.minim.*;
 
+float temp = random(1)*768;
 boolean touch = false;
 float[] lampColor = new float [2];
 int caseColor;
 int nbLantern = 0;
 ArrayList<Particule> particules;
-
+int hue = 180;
+float visible = 125;
+boolean restart = false;
 
 //------------------------------------Music declaration
 Minim minim;
@@ -30,7 +33,6 @@ Serial myPort;
 void setup() {
   size(1024 , 768, P2D);
   colorMode(HSB, 360, 100, 100);
-
   //---------------------------------------------------------Serial Setup---------------------------------------------
   println(Serial.list());
   myPort = new Serial(this, Serial.list()[5], 4800);
@@ -56,7 +58,45 @@ void setup() {
 
 //-------------------Draw
 void draw() {
-  background(360, 100, 0);
+  background(360, 0, 0);
+
+// moving background lines
+      for(int x = 0; x < 1024; x++) {
+          //for (float hue = 0; hue < lampColor[0]; hue++) {
+          //  println(lampColor[0]);
+            if (hue != lampColor[0] && visible > 20.1 && restart == false) {
+              visible -= 0.001;
+            }
+            else if (restart == true && visible < 100) {
+              visible += 0.001;
+            }
+            if (visible < 20.1 && lampColor[0] > 0.1) {
+              restart = true;
+            }
+            if (visible >= 100.0)
+              restart = false;
+            // println(visible);
+            if (lampColor[0] > 0 && hue < lampColor[0]) {
+              hue += 1;
+              //println("HUE = " + hue + " et BIM -> " + lampColor[0]);
+            }
+            else if (lampColor[0] > 0 && hue > lampColor[0]) {
+              hue -= 1;
+              //println("BAM");
+            }
+            stroke(hue + 30, 80, 50, (visible-30));
+            line(x,0,x,random(1)*768);
+       //     stroke(hue, 80, 50, visible-50);
+       //   line(x+1,0,x+1,random(1)*768);
+           
+            stroke(hue, 80, 50, visible);
+            line(x,768,x,random(1)*800);
+         // }
+      
+      stroke(222, 22, 16, 100);
+      line(x,768,x,random(1)*random(1)*random(1)*768);
+      }
+      
 
   //--------------------------------------------------------Recuperation donnée flora----------------------------------------------------
   while (myPort.available () > 0) {
@@ -87,7 +127,7 @@ void draw() {
           println("La Lanterne " + caseColor + " a pris la teinte " + couleur);
         }
       }
-      
+
       //compte le nombre de lanternes activées - ne reçoit que A et B pour l'instant
       if (data.equals( "AT")) {
         nbLantern ++;

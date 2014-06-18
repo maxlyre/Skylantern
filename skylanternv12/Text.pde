@@ -12,7 +12,9 @@ class Text{
        opacity = 0;
      }
    
-   opacity ++;
+    if (opacity < 100) {
+       opacity ++;}
+
     fill(0,0,100,opacity);
        textFont(font, 32);
        textAlign(CENTER);
