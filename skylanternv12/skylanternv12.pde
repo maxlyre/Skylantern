@@ -10,6 +10,7 @@ ArrayList<Particule> particules;
 int hue = 180;
 float visible = 125;
 boolean restart = false;
+boolean isBase = true;
 
 
 
@@ -22,7 +23,7 @@ Serial myPort;
 
 
 void setup() {
-  size(1024 , 768, P2D);
+  size( 1024, 768, P2D);
   colorMode(HSB, 360, 100, 100);
   //---------------------------------------------------------Serial Setup---------------------------------------------
   println(Serial.list());
@@ -93,12 +94,14 @@ void draw() {
         println(data);
         
         //regarde quelle lanterne
-      if (data.equals( "A")) { 
-         caseColor = 0;
-         println("Selected Lantern is A\n");
+      if (data.equals("A")) {
+        println("Selected Lantern is A\n");
+        caseColor = 0;
+         
       }
-      else if (data.equals( "B")){
-          caseColor = 1;
+      else if (data.equals("B")){
+        println("Selected Lantern is B\n");
+        caseColor = 1;
       }
       
       //récupération de la teinte et assignation dans la case adéquate du tableau
@@ -108,26 +111,31 @@ void draw() {
         int couleur = int(teintecal);
         if (couleur == 0) {} // ne fait rien si la valeur de teinte est nulle 
         else {
-          lampColor[caseColor] = couleur;
           println("La Lanterne " + caseColor + " a pris la teinte " + couleur);
+          lampColor[caseColor] = couleur;
+          if (nbLantern > 0 && isBase == true) {
+            Pbase.shiftGain(0.0, -80.0, 1000);
+            isBase = false;
+          }
+          playMusique(caseColor);
         }
       }
 
       //compte le nombre de lanternes activées - ne reçoit que A et B pour l'instant
       if (data.equals( "A")) {
-        nbLantern ++;
+        nbLantern++;
       }
       else if (data.equals("B")){
-        nbLantern ++;
+        nbLantern++;
       }
      
      //supprime les lanternes au timeout
       if (data.equals("AO") && nbLantern > 0) {
-        nbLantern --;
+        nbLantern--;
         lampColor[0] = 0;
       }
       else if (data.equals("BO") && nbLantern > 0){
-        nbLantern --;
+        nbLantern--;
         lampColor[1]=0; //met la couleur à zéro -> stop la génération de particules ?
       }
       println("Nombre de lanternes = " + nbLantern);
@@ -145,27 +153,7 @@ void draw() {
   //------------------------------------------------Touch-----------------------------------  
 
   if (touch) {
-    println("Mteinte is " + Mteinte);
-    if (Mteinte == false) { 
-     // lampColor[1] = 220;
-      for(int i=0; i<2;i++){
-       if(lampColor[i] != 0){
-         println("isPlaying is " + isPlaying);
-         if (!fade) {
-          println("FADE OUT BASE");
- 
-          Pbase.shiftGain(0.0, -80.0, 1000);
-          playMusique(i);
-          isPlaying = true;
-         }
-         
-         else if (isPlaying) {
-           playMusique(i);
-         }
-       }
-      } 
-    }
-         
+
     // Particule --------------------------------------------------------------------------------
     // add particule
     for(int i = 0; i < 2; i++){
@@ -180,13 +168,11 @@ void draw() {
     //Texte et musique stop
     text.display(textcount);
     textcount = 0;
-    //particules.clear();
-    //particules.clear();
-    if (Mteinte == true) { 
-      fade = false;
-      isPlaying = false;      
+
+    if (nbLantern == 0 && !isBase) {
+      println("TEST stop musique");
       stopMusique();
-    }
+    }    
   }
   //----------------Mise à jours particule Particule
   for (int i = 0; i < particules.size(); i ++) {
@@ -199,7 +185,6 @@ void draw() {
   }
   
   frame.setTitle("fps "+round(frameRate));
-  
 }
 
 

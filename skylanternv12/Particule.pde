@@ -28,7 +28,6 @@ class Particule{
   
   void display(){
     noStroke();
-    //println(lifespan);
     fill(H ,S, B, lifespan);
     ellipse(location.x,location.y,diameter_x, diameter_y);
   }
@@ -36,7 +35,7 @@ class Particule{
   void move(){
     velocity.add(acceleration);
     location.add(velocity);
-    lifespan -= random(0.4, 0.6);
+    lifespan -= random(0.2, 0.4);
   }
   
   boolean disparu(){
