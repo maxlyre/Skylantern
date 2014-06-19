@@ -9,81 +9,82 @@ AudioPlayer Pjaune;
 AudioPlayer Pviolet;
 boolean Mteinte = false;
 boolean fade = false;
+boolean isPlaying = false;
 
 //------------------------------------------------------------------- Musique Methods
 
 void playMusique(int i) {
-  println("Play Music Lantern " + i);
+  println("Play Music Lantern " + i + "\nFADE is " + fade);
 
   if (lampColor[i]>0 && lampColor[i]< 25) {
-    println("ROUGE");
+    println("Lantern " + i + " is ROUGE " + "Fade is " + fade);
     
     Prouge.setGain(-80);
     Prouge.loop();
-    if (!fade) {
+    //if (!fade) {
       Prouge.shiftGain(-80, -10, 1000); 
-      fade = true;
-    } 
+    //  fade = true;
+    //} 
   }
   
   else if (lampColor[i]>25 && lampColor[i]< 70) {
-    println("JAUNE");
+    println("Lantern " + i + " is JAUNE " + "Fade is " + fade);
     Pjaune.setGain(-80);
     Pjaune.loop();
-    if (!fade) {
+    //if (!fade) {
       Pjaune.shiftGain(-80, -10, 1000); 
-      fade = true;
-    } 
+    //  fade = true;
+    //} 
   }
   
   else if (lampColor[i]>70 && lampColor[i]< 140) {
-    println("VERT");
+    println("Lantern " + i + " is VERT " + "Fade is " + fade);
     Pvert.setGain(-80);
     Pvert.loop();
-    if (!fade) {
+    //if (!fade) {
       Pvert.shiftGain(-80, -10, 1000); 
-      fade = true;
-    } 
+    //  fade = true;
+    //} 
   }
   
   else if (lampColor[i]>140 && lampColor[i]< 200) {
-    println("CYAN");
+    println("Lantern " + i + " is CYAN " + "Fade is " + fade);
     Pcyan.setGain(-80);
     Pcyan.loop();
-    if (!fade) {
+    //if (!fade) {
       Pcyan.shiftGain(-80, -10, 1000); 
-      fade = true;
-    } 
+    //  fade = true;
+    //} 
   }
   
   else if (lampColor[i]>200 && lampColor[i]< 250) {
-    println("BLEU");
+    println("Lantern " + i + " is BLEU " + "Fade is " + fade);
     Pbleu.setGain(-80);
     Pbleu.loop();
-    if (!fade) {
+    //if (!fade) {
       Pbleu.shiftGain(-80, -10, 1000); 
-      fade = true;
-    }  
+    //  fade = true;
+    //}  
   }
   
   else if (lampColor[i]>250 && lampColor[i]< 310) {    
-    println("VIOLET");
+    println("Lantern " + i + " is VIOLET " + "Fade is " + fade);
     Pviolet.setGain(-80);
     Pviolet.loop();
-    if (!fade) {
+    //if (!fade) {
       Pviolet.shiftGain(-80, -10, 1000); 
-      fade = true;
-    }  
+    //  fade = true;
+    //}  
   }
   
   else if (lampColor[i]>310 && lampColor[i]< 360) {
-    println("ROUGE 2");
+    println("Lantern " + i + " is ROUGE 2 " + "Fade is " + fade);
     Prouge.setGain(-80);
     Prouge.loop();
-    if (!fade) {
+    //if (!fade) {
       Prouge.shiftGain(-80, -10, 1000); 
-      fade = true;
-    } 
+    //  fade = true;
+    //} 
   }
 
   Mteinte = true;
@@ -100,7 +101,7 @@ void stopMusique() {
   Pviolet.shiftGain(-10, -80, 1000);
 
 
-  Pbase.shiftGain(-80.0, 0.0, 1000);
+  Pbase.shiftGain(-80, -10, 1000);
 
   Mteinte = false;
 }

@@ -26,7 +26,7 @@ void setup() {
   colorMode(HSB, 360, 100, 100);
   //---------------------------------------------------------Serial Setup---------------------------------------------
   println(Serial.list());
-  myPort = new Serial(this, Serial.list()[5], 4800);
+  myPort = new Serial(this, Serial.list()[0], 4800);
   println("\tmyPort is : " + myPort);
   text = new Text();
   
@@ -55,7 +55,6 @@ void setup() {
 //-------------------Draw
 void draw() {
   background(360, 0, 0);
-
 // moving background lines
 /*      for(int x = 0; x < 1024; x++) {
             if (hue != lampColor[0] && visible > 20.1 && restart == false) {
@@ -94,11 +93,11 @@ void draw() {
         println(data);
         
         //regarde quelle lanterne
-      if (data.equals( "AT")) { 
+      if (data.equals( "A")) { 
          caseColor = 0;
          println("Selected Lantern is A\n");
       }
-      else if (data.equals( "BT")){
+      else if (data.equals( "B")){
           caseColor = 1;
       }
       
@@ -115,10 +114,10 @@ void draw() {
       }
 
       //compte le nombre de lanternes activées - ne reçoit que A et B pour l'instant
-      if (data.equals( "AT")) {
+      if (data.equals( "A")) {
         nbLantern ++;
       }
-      else if (data.equals("BT")){
+      else if (data.equals("B")){
         nbLantern ++;
       }
      
@@ -146,16 +145,22 @@ void draw() {
   //------------------------------------------------Touch-----------------------------------  
 
   if (touch) {
-   
+    println("Mteinte is " + Mteinte);
     if (Mteinte == false) { 
-      lampColor[1] = 220;
+     // lampColor[1] = 220;
       for(int i=0; i<2;i++){
        if(lampColor[i] != 0){
+         println("isPlaying is " + isPlaying);
          if (!fade) {
           println("FADE OUT BASE");
-          fade = true;
+ 
           Pbase.shiftGain(0.0, -80.0, 1000);
           playMusique(i);
+          isPlaying = true;
+         }
+         
+         else if (isPlaying) {
+           playMusique(i);
          }
        }
       } 
@@ -178,7 +183,8 @@ void draw() {
     //particules.clear();
     //particules.clear();
     if (Mteinte == true) { 
-      fade = false;      
+      fade = false;
+      isPlaying = false;      
       stopMusique();
     }
   }
