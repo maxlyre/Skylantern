@@ -148,14 +148,13 @@ void draw() {
   if (touch) {
    
     if (Mteinte == false) { 
-     // lampColor[1] = 220;
+      lampColor[1] = 220;
       for(int i=0; i<2;i++){
        if(lampColor[i] != 0){
          if (!fade) {
           println("FADE OUT BASE");
           fade = true;
           Pbase.shiftGain(0.0, -80.0, 1000);
-          Pbase.pause();
           playMusique(i);
          }
        }
