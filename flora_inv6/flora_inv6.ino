@@ -4,23 +4,23 @@
 #include <CapacitiveSensor.h>
 #include <VirtualWire.h>
 
+//Nom Lantern
+char nomLantern = 'A';
+
 //Timer
 SimpleTimer timer;
 int timer_id1;
 int timer_id2;
-
 //Capacitive 
 CapacitiveSensor   cs_12_6 = CapacitiveSensor(12,6);
-
-//Compteur de Touch
-int touchcount=0;
-int nottouchcount=0;
 
 //Bolean Cycle
 boolean touch = false;
 boolean cycle = false;
 boolean protect = false;
-
+boolean time=false;
+boolean protectwaiting=false;
+int compteur =0;
 //Conversion Couleur
 Color cur_color = Color(1,1,1);
 float hue = 0;
@@ -63,7 +63,7 @@ void loop() {
   long total1 =  cs_12_6.capacitiveSensor(30);
   timer.run();
   
-  Serial.println(total1);  
+  //Serial.println(total1);  
   
     //----------------------------- DEBUG
    /*char chartotall[sizeof(total1)];
@@ -73,37 +73,44 @@ void loop() {
        delay(200);  */
        
        
-  //----------------------------- Incremente touch
+  //----------------------------- TOuch or not
   if (total1 ==0 ){ 
-    nottouchcount = 0;
-    touchcount=touchcount+1;
-    //touch = true;
+   touch= true;
   } else {
-    nottouchcount = nottouchcount+1;
-    touchcount = 0;
-    //touch = false;
+    
+    touch = false;
   }
   
-  //----------------------------- Touch, Si 3 loop true : touch = true
-  if(touchcount == 5){
-    touch = true;
-    touchcount=0;
-  }else if(nottouchcount == 5){
-    touch = false;
-    nottouchcount=0;
-  }
        
  //------------------------------------------------------------------------------------ Debut du cycle
   
+  
   //----------------------------- Change de couleurs 
   if (touch == true && protect == false){ 
-     colorChange();  
+   // Serial.println("Couleur cbange");  
+    colorChange();
+    compteur ++;
+    
+    protectwaiting = true;
+    if(compteur==100){
+      Serial.println("compteurOK");
+      cycle=true;
+    }
   }
+  
+  
   
   //----------------------------- S'envole 
  if (cycle== true && touch == false) {
-      Begin();        
+   Serial.println("Send");   
+    Begin();     
+ } 
+ else if ( touch ==false && cycle == false && protectwaiting == false){
+   //Serial.println("compteur 0");
+   compteur = 0;
  }
- 
+ if(touch== false){
+    protectwaiting = false;
+  }
 }
 

@@ -9,18 +9,17 @@ void colorChange(){
        pixels.show();
      }   
     
-    cycle= true;
+    //cycle= true;
 }
-
 
 //----------------------------- couleur
 void rainbow(){
-  hue += 0.003;
+  hue += 0.0008;
   if ( hue >=1 ) hue = 0.01;
   sat = 1.0;
   val = 0.4;
   cur_color.convert_hcl_to_rgb(hue,sat,val);
- // delay(20);
+  //delay(10);
 }
 
 
@@ -35,21 +34,28 @@ void Begin(){
      }
        
     //---------------- Envoi Lettre
-        vw_send((uint8_t *)"A", 1); //<----------------------------------------------------------------------!Nom Lantern
-        vw_wait_tx();                                          
-        delay(200);
+        //vw_send((uint8_t *)"A", 1); //<----------------------------------------------------------------------!Nom Lantern
+        //vw_wait_tx();                                          
+        //delay(200);
      
      //---------------- Envoi teinte
       char charteinte[sizeof(hue)];
-      dtostrf(hue, sizeof(hue),2,charteinte);     
-      vw_send((uint8_t *)charteinte,sizeof(charteinte));
+      dtostrf(hue, sizeof(hue),2,charteinte);
+      char sendMessage[sizeof(charteinte)+1];
+      sendMessage[0]=nomLantern;
+      for(int i=0; i< sizeof(charteinte); i++){
+        sendMessage[i+1] = charteinte[i];
+      }
+      vw_send((uint8_t *)sendMessage,sizeof(sendMessage));
       vw_wait_tx();                                          
       delay(200);    
-              
+      
+      
      //---------------- Lance Timer pour extinction
-      timer_id1 = timer.setTimeout(46500, End); 
+      timer_id1 = timer.setTimeout(1000, End); 
        
-       cycle= false; 
+       protectwaiting = false;
+       cycle= false;
 }
 
 
@@ -62,12 +68,12 @@ void End() {
     
    }
    //---------------- Envoi l'ordre d'arrêt
-   vw_send((uint8_t *)"AO", 2);
-     vw_wait_tx();      // On attend que le message complet soit envoyé.
-     delay(200);
+  // vw_send((uint8_t *)"AO", 2);
+    // vw_wait_tx();      // On attend que le message complet soit envoyé.
+     //delay(200);
      
    //---------------- Lance Timer qui desactive la protection
-   timer_id2 = timer.setTimeout(6500, Protect); 
+   timer_id1 = timer.setTimeout(1, Protect); 
     
 }
  
