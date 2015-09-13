@@ -12,13 +12,13 @@ class Text{
        opacity = 0;
      }
    
-    if (opacity < 100) {
+    if (opacity < 255) {
        opacity ++;}
 
-    fill(0,0,100,opacity);
-       textFont(font, 32);
+    fill(0,0,255,opacity);
+       textFont(font, 40);
        textAlign(CENTER);
-      text(" Mettez vos mains sur les marques\n maintenez la lanterne,\n choisissez la couleur de vos vœux\n et laissez-la s'envoler", width/2, height/2);
+      text(" Put your hands on the marks\n And hold the lantern,\n Select your color inside the lantern\n And release it \n ------\n Mettere le mani sui marchi  \n E tenere la lanterna \n Scegliere il colore dei vuoi desideri interno della lanterna \n E fatelo salire", width/2, height/2-170);
      
       }
     

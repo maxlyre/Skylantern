@@ -10,10 +10,8 @@ ArrayList<Particule> particules;
 int hue = 180;
 float visible = 125;
 boolean restart = false;
-boolean isBase = true;
 
-int WIDTH = 1920;
-int HEIGHT = 1080;
+
 
 //----------------------Texte
 Text text;
@@ -24,13 +22,11 @@ Serial myPort;
 
 
 void setup() {
-  noCursor();
-  size( WIDTH, HEIGHT, P2D);
+  size(1024 , 768, P2D);
   colorMode(HSB, 360, 100, 100);
-  
   //---------------------------------------------------------Serial Setup---------------------------------------------
   println(Serial.list());
-  myPort = new Serial(this, Serial.list()[0], 4800);
+  myPort = new Serial(this, Serial.list()[5], 4800);
   println("\tmyPort is : " + myPort);
   text = new Text();
   
@@ -45,10 +41,8 @@ void setup() {
   Pcyan = minim.loadFile("cyan.mp3");
   Pvert = minim.loadFile("vert.mp3");
   Pjaune = minim.loadFile("jaune.mp3");
-  Pmagenta = minim.loadFile("magenta.mp3");
   
   Pbase.loop();
-  Pbase.setGain(-10);
   float Gain_base = Pbase.getGain();
   println(Gain_base);
   
@@ -62,8 +56,37 @@ void setup() {
 void draw() {
   background(360, 0, 0);
 
+// moving background lines
+/*      for(int x = 0; x < 1024; x++) {
+            if (hue != lampColor[0] && visible > 20.1 && restart == false) {
+              visible -= 0.001;
+            }
+            else if (restart == true && visible < 100) {
+              visible += 0.001;
+            }
+            if (visible < 20.1 && lampColor[0] > 0.1) {
+              restart = true;
+              hue = int(lampColor[0]);
+            }
+            if (visible >= 100.0)
+              restart = false;
+          //  if (lampColor[0] > 0) {
+          //    hue = int(lampColor[0]);
+          //  }
+            stroke(hue + 30, 80, 50, (visible-30));
+            line(x,0,x,random(1)*768);
+
+            stroke(hue, 80, 50, visible);
+            line(x,768,x,random(1)*800);
+ 
+            stroke(222, 22, 16, 100);
+            line(x,768,x,random(1)*random(1)*random(1)*768);
+      }
+  */    
+
   //--------------------------------------------------------Recuperation donnée flora----------------------------------------------------
   while (myPort.available () > 0) {
+    
     String inByte = myPort.readStringUntil('\n'); //lecture sur le port
     if (inByte != null) { //regarde si donnée
 
@@ -71,14 +94,12 @@ void draw() {
         println(data);
         
         //regarde quelle lanterne
-      if (data.equals("A")) {
-        println("Selected Lantern is A\n");
-        caseColor = 0;
-         
+      if (data.equals( "AT")) { 
+         caseColor = 0;
+         println("Selected Lantern is A\n");
       }
-      else if (data.equals("B")){
-        println("Selected Lantern is B\n");
-        caseColor = 1;
+      else if (data.equals( "BT")){
+          caseColor = 1;
       }
       
       //récupération de la teinte et assignation dans la case adéquate du tableau
@@ -88,29 +109,26 @@ void draw() {
         int couleur = int(teintecal);
         if (couleur == 0) {} // ne fait rien si la valeur de teinte est nulle 
         else {
-          println("La Lanterne " + caseColor + " a pris la teinte " + couleur);
           lampColor[caseColor] = couleur;
-          playMusique(caseColor);
+          println("La Lanterne " + caseColor + " a pris la teinte " + couleur);
         }
       }
 
       //compte le nombre de lanternes activées - ne reçoit que A et B pour l'instant
-      if (data.equals( "A")) {
-        nbLantern++;
+      if (data.equals( "AT")) {
+        nbLantern ++;
       }
-      else if (data.equals("B")){
-        nbLantern++;
+      else if (data.equals("BT")){
+        nbLantern ++;
       }
      
      //supprime les lanternes au timeout
       if (data.equals("AO") && nbLantern > 0) {
-        nbLantern--;
-        stopZik(0);
+        nbLantern --;
         lampColor[0] = 0;
       }
       else if (data.equals("BO") && nbLantern > 0){
-        nbLantern--;
-        stopZik(1);
+        nbLantern --;
         lampColor[1]=0; //met la couleur à zéro -> stop la génération de particules ?
       }
       println("Nombre de lanternes = " + nbLantern);
@@ -128,7 +146,22 @@ void draw() {
   //------------------------------------------------Touch-----------------------------------  
 
   if (touch) {
-
+   
+    if (Mteinte == false) { 
+     // lampColor[1] = 220;
+      for(int i=0; i<2;i++){
+       if(lampColor[i] != 0){
+         if (!fade) {
+          println("FADE OUT BASE");
+          fade = true;
+          Pbase.shiftGain(0.0, -80.0, 1000);
+          Pbase.pause();
+          playMusique(i);
+         }
+       }
+      } 
+    }
+         
     // Particule --------------------------------------------------------------------------------
     // add particule
     for(int i = 0; i < 2; i++){
@@ -143,17 +176,12 @@ void draw() {
     //Texte et musique stop
     text.display(textcount);
     textcount = 0;
-    
-    float randomBase = random(1,6);
-    println(randomBase);
-    if(int(randomBase) == 1){
-      println("in");
-          particules.add(new Particule(200));
-       }
-    
-    if (nbLantern == 0 && !isBase) {
-      stopFullMusique();
-    }    
+    //particules.clear();
+    //particules.clear();
+    if (Mteinte == true) { 
+      fade = false;      
+      stopMusique();
+    }
   }
   //----------------Mise à jours particule Particule
   for (int i = 0; i < particules.size(); i ++) {
@@ -166,6 +194,7 @@ void draw() {
   }
   
   frame.setTitle("fps "+round(frameRate));
+  
 }
 
 

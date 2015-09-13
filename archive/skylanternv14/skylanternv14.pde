@@ -12,8 +12,8 @@ float visible = 125;
 boolean restart = false;
 boolean isBase = true;
 
-int WIDTH = 1920;
-int HEIGHT = 1080;
+int WIDTH = 1024;
+int HEIGHT = 768;
 
 //----------------------Texte
 Text text;
@@ -24,13 +24,12 @@ Serial myPort;
 
 
 void setup() {
-  noCursor();
   size( WIDTH, HEIGHT, P2D);
   colorMode(HSB, 360, 100, 100);
   
   //---------------------------------------------------------Serial Setup---------------------------------------------
   println(Serial.list());
-  myPort = new Serial(this, Serial.list()[0], 4800);
+  myPort = new Serial(this, Serial.list()[5], 4800);
   println("\tmyPort is : " + myPort);
   text = new Text();
   
@@ -45,10 +44,8 @@ void setup() {
   Pcyan = minim.loadFile("cyan.mp3");
   Pvert = minim.loadFile("vert.mp3");
   Pjaune = minim.loadFile("jaune.mp3");
-  Pmagenta = minim.loadFile("magenta.mp3");
   
   Pbase.loop();
-  Pbase.setGain(-10);
   float Gain_base = Pbase.getGain();
   println(Gain_base);
   
@@ -90,6 +87,10 @@ void draw() {
         else {
           println("La Lanterne " + caseColor + " a pris la teinte " + couleur);
           lampColor[caseColor] = couleur;
+          if (nbLantern > 0 && isBase == true) {
+            Pbase.shiftGain(0.0, -80.0, 1000);
+            isBase = false;
+          }
           playMusique(caseColor);
         }
       }
@@ -143,14 +144,7 @@ void draw() {
     //Texte et musique stop
     text.display(textcount);
     textcount = 0;
-    
-    float randomBase = random(1,6);
-    println(randomBase);
-    if(int(randomBase) == 1){
-      println("in");
-          particules.add(new Particule(200));
-       }
-    
+
     if (nbLantern == 0 && !isBase) {
       stopFullMusique();
     }    
