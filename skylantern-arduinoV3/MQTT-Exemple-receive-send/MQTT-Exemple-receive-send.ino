@@ -30,7 +30,7 @@
 
 const char* ssid = "SkylanternBox"; //Nom du reseau
 const char* password = ""; // MDP du reseau
-const char* mqtt_server = "192.168.0.8"; //Ip du server
+const char* mqtt_server = "192.168.1.8"; //Ip du server
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -101,6 +101,7 @@ void reconnect() {
       client.publish("outTopic", "hello world"); // Choix du channel qui envoi
       // ... and resubscribe
       client.subscribe("outTopic"); //Choix du chanel de recuperation
+      client.subscribe("inTopic"); //Choisi 2eme channel de recuperation (multi chanel)
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -117,6 +118,7 @@ void loop() {
   }
   client.loop(); // Recupere les messages dans le channel
 
+  
   long now = millis();
   if (now - lastMsg > 2000) { //timer
     lastMsg = now; //timer
@@ -124,6 +126,7 @@ void loop() {
     snprintf (msg, 75, "hello world #%ld", value); //formate le string envoyé
     Serial.print("Publish message: ");
     Serial.println(msg);
-    client.publish("outTopic", msg); //Envoi du message
+    //client.publish("outTopic", msg); //Envoi du message
+    callback();
   }
 }
