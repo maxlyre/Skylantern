@@ -43,10 +43,12 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.println();
   
   // Filtre suivant message
-  if (payload[0] == 'd' && fly) {
-    downState();
-  } else if (payload[0] == 's' && fly){
-    endState();
+  if (payload[0] == 'r') {
+    motorReady = true; //Active la lampe + Mpteur ready
+  } else if (payload[0] == 'd' && fly){
+    downState(); //Descente des lampe
+  }else if (payload[0] == 's' && fly){
+    endState(); //Arret des moteurs en position basse
   }
 
 }
@@ -60,7 +62,7 @@ void reconnect() {
     if (client.connect("ESP8266Client")) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      client.publish(lanternState, "start"); //Envoi le statut de base
+      client.publish(lanternState, "ready"); //Envoi le statut de base
       // ... and resubscribe
       client.subscribe(motorState); //S'inscrit au channel statut du moteurs
       

@@ -7,29 +7,40 @@ void stateManage(){
   } else { 
     touch = false;
   }
-  
-  if(touch && fly == false){//----- Quand toucher
-    colorChange();
-    compteur ++;
 
-    //Serial.println(compteur);
-    if(compteur == 60){
+  //Compte le temps toucher et change couleurs
+  if(touch && fly == false){
+    colorChange();
+    
+    compteurTouch ++;
+    if(compteurTouch == 60){
       client.publish(lanternState, "touch");
       Serial.println("compteurOK");
       cycle = true;
+    } else if(compteurTouch > 1000){
+      capacitiveReset();
+      cycle = false;
+      touch = false;
+      Serial.println("Debloque touch");
     }
   }
-  
+
+  //Action
   if (touch == false && cycle == true && fly == false) {//----- S'envole 
-    flyState();     
+    capacitiveResetcount = 0;
+    flyState();    
   } 
   else if (touch == false && cycle == false && fly == false){ //----- Reste au sol 
-    compteur = 0;
-    Appel();
-  }
+    compteurTouch = 0; //Remet a 0 le touch si trop court
+    Appel(); //Animation Pulse
 
-  
-  
+    //Reset le capacitive toute les 
+    capacitiveResetcount ++;
+    if (capacitiveResetcount == 1500) {
+        capacitiveReset();
+        capacitiveResetcount = 0;
+    }
+  } 
 }
 
 //----------------------------- Couleur de la lantern change
@@ -45,7 +56,7 @@ void colorChange(){
 
 //----------------------------- couleur
 void rainbow(){
-  hue += 0.0008;
+  hue += 0.001;
   if ( hue >=1 ) hue = 0.01;
   sat = 1.0;
   val = 0.4;
@@ -67,7 +78,7 @@ void flyState(){
       Serial.println("Fly");
      
      //Allume lantern
-      for(int i=60; i<200;i++){
+      for(int i=compteurPulse; i<200;i++){
        pixels.setBrightness(i);
        pixels.show();
        delay(10);
@@ -78,7 +89,7 @@ void flyState(){
 
 //----------------------------- Baisse la luminosité
 void downState() {
-   for(int i=200; i>60; i--){ 
+   for(int i=200; i>40; i--){ 
      pixels.setBrightness(i);
      pixels.show();
      delay(10);
@@ -90,8 +101,9 @@ void downState() {
 //----------------------------- Remet au blanc
 void endState(){
    for(int i=0; i < NUMPIXELS; i++){   
-     pixels.setPixelColor(i,pixels.Color(255,255,255)); // we choose green
+     pixels.setPixelColor(i,pixels.Color(255,255,255)); // we choose white
      pixels.show(); // Initialize all pixels to 'off'
+     delay(40);
    }
     client.publish(lanternState, "wait");
     client.publish(lanternColor, "0");
@@ -99,29 +111,32 @@ void endState(){
     Serial.println("fly off");
 }
 
- void Appel(){ //Change pulse, voir bookmark A VOIR
-   for(int i=0; i < NUMPIXELS; i++){   
+ void Appel(){
+  for(int i=0; i < NUMPIXELS; i++){   
      pixels.setPixelColor(i,pixels.Color(255,255,255)); // we choose white
      pixels.show(); // Initialize all pixels to 'off'
-     delay(30);
    }
-    Serial.print("wave");
-     for(int i=40; i<130; i++){ 
-       pixels.setBrightness(i);
-       pixels.show();
-       delay(7);
-       }
-       for(int i=130; i>40; i--){ 
-       pixels.setBrightness(i);
-       pixels.show();
-       delay(7);
-       }
+
+    if(compteurPulse >= 100){
+      sidePulse = false;
+      Serial.print("wave");
+    }else if(compteurPulse <= 40){
+      sidePulse = true;
+    }
+    
+    if(sidePulse){
+      compteurPulse++;
+    }else{
+      compteurPulse--;
+    }
+    pixels.setBrightness(compteurPulse);
+    pixels.show();
  }
 
  void capacitiveReset(){
   digitalWrite(capacitiveOn,LOW);
   delay(20);
   digitalWrite(capacitiveOn,HIGH);
- 
- }// Add timer pour le capacitive
+  Serial.println("Reset");
+ }
 

@@ -2,8 +2,10 @@
 #include <PubSubClient.h>
 #include <Adafruit_NeoPixel.h>
 #include <Color.h>
-#include <SimpleTimer.h>
-//Add timer reset library
+
+//Add start function
+
+
 
 // Update these with values suitable for your network.
 
@@ -24,11 +26,16 @@ char lanternColor[20];
 char motorState[20];
 
 //Bolean Cycle
+boolean motorReady = false;
 boolean cycle = false;
 boolean fly = false;
 boolean touch = false;
-int compteur =0;
+int compteurTouch =0;
 
+//Pulse Variable
+int compteurPulse = 40;
+boolean sidePulse = true;
+      
 //Conversion Couleur
 Color cur_color = Color(1,1,1);
 float hue = 0;
@@ -40,6 +47,7 @@ char hueMsg[4];
 int capacitivePin = 16; //Numero de la pin
 int capacitiveState = 0; //Etat du touch
 int capacitiveOn = 5;
+int capacitiveResetcount = 0;
 
 // Which pin on the FLORA is connected to the NeoPixel ring?
 #define PIN            4
@@ -55,7 +63,6 @@ void setup() {
   Serial.begin(115200);
   
   //Setup connection
-  delay(50);
   setup_name(); // Setup nom lantern
   setup_wifi(); //Connecter l'arduino
   client.setServer(mqtt_server, 1883); // Setup du serveur
@@ -70,9 +77,11 @@ void setup() {
 
   //Setup Led
    pixels.begin(); // This initializes the NeoPixel library.
+   
+   //Led rouge en attedant l'initialisation des moteurs
    for(int i=0; i < NUMPIXELS; i++){   
-     pixels.setPixelColor(i,pixels.Color(255,255,255)); // we choose green
-     pixels.setBrightness(60);
+     pixels.setPixelColor(i,pixels.Color(255,0,0)); // we choose green
+     pixels.setBrightness(40);
      pixels.show();
    }
 }
@@ -83,7 +92,9 @@ void loop() {
     reconnect();
   }
   client.loop(); // Recupere les messages dans le channel
-
-  stateManage();
+  
+  if(motorReady){
+    stateManage();
+  }
   
 }
