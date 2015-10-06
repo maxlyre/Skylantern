@@ -1,16 +1,15 @@
 void setup_name(){
-  snprintf (lanternState, 20, "Sky/%ld/lantern", nomLantern); //Channel statut lantern
+  snprintf (motorState, 20, "Sky/%ld/motor", nomMotor); //Channel statut lantern
+  Serial.print("Channel motor statut : ");
+  Serial.println(motorState);
+
+  snprintf (lanternState, 20, "Sky/%ld/lantern", nomMotor); //Channel statut lantern
   Serial.print("Channel Lantern statut : ");
   Serial.println(lanternState);
   
-  snprintf (lanternColor, 20, "Sky/%ld/color", nomLantern); //Channel couleurs
-  Serial.print("Channel Lantern color : ");
-  Serial.println(lanternColor);
-  
-  snprintf (motorState, 20, "Sky/%ld/motor", nomLantern); //Channel statut moteur
-  Serial.print("Channel Motor statut : ");
-  Serial.println(motorState);
+  nameSetup = true;
 }
+
 
 void setup_wifi() {
 
@@ -42,15 +41,14 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
   Serial.println();
   
-  // Filtre suivant message
-  if (payload[0] == 'd' && fly) {
-    downState();
-  } else if (payload[0] == 's' && fly){
-    endState();
+  if(nameSetup){
+    Wire.beginTransmission(I2C_ADDRESS_OTHER);
+    Wire.write(payload,length);
+    Serial.print("Transfer vers trinket");
+    //Serial.println((char)payload);
+    Wire.endTransmission();
   }
-
 }
-
 
 void reconnect() {
   // Loop until we're reconnected
@@ -59,11 +57,8 @@ void reconnect() {
     // Attempt to connect
     if (client.connect("ESP8266Client")) {
       Serial.println("connected");
-      // Once connected, publish an announcement...
-      client.publish(lanternState, "start"); //Envoi le statut de base
       // ... and resubscribe
-      client.subscribe(motorState); //S'inscrit au channel statut du moteurs
-      
+      client.subscribe(lanternState); //Choix du chanel de recuperation
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());

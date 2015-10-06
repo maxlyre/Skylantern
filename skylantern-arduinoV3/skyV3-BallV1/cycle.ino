@@ -84,19 +84,22 @@ void downState() {
      delay(10);
    }
    Serial.println("light low");
+
+   capacitiveReset();
 }
+//----------------------------- Remet au blanc
 void endState(){
    for(int i=0; i < NUMPIXELS; i++){   
      pixels.setPixelColor(i,pixels.Color(255,255,255)); // we choose green
      pixels.show(); // Initialize all pixels to 'off'
    }
-    client.publish(lanternState, "standby");
+    client.publish(lanternState, "wait");
     client.publish(lanternColor, "0");
     fly=false;
     Serial.println("fly off");
 }
 
- void Appel(){
+ void Appel(){ //Change pulse, voir bookmark A VOIR
    for(int i=0; i < NUMPIXELS; i++){   
      pixels.setPixelColor(i,pixels.Color(255,255,255)); // we choose white
      pixels.show(); // Initialize all pixels to 'off'
@@ -114,3 +117,11 @@ void endState(){
        delay(7);
        }
  }
+
+ void capacitiveReset(){
+  digitalWrite(capacitiveOn,LOW);
+  delay(20);
+  digitalWrite(capacitiveOn,HIGH);
+ 
+ }// Add timer pour le capacitive
+

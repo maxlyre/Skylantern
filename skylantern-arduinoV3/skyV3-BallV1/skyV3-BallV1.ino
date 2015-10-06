@@ -2,6 +2,8 @@
 #include <PubSubClient.h>
 #include <Adafruit_NeoPixel.h>
 #include <Color.h>
+#include <SimpleTimer.h>
+//Add timer reset library
 
 // Update these with values suitable for your network.
 
