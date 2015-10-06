@@ -27,7 +27,7 @@ int countpositif =0;
 
 void setup() {
   Serial.begin(9600);
-  delay(5000);
+  
   setupName();
   stepper.setMaxSpeed(6000);
   stepper.setAcceleration(4000);

@@ -10,7 +10,7 @@ char lanternState[20];
 
 const char* ssid = "SkylanternBox"; //Nom du reseau
 const char* password = ""; // MDP du reseau
-const char* mqtt_server = "192.168.0.8"; //Ip du server
+const char* mqtt_server = "192.168.1.8"; //Ip du server
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -28,7 +28,6 @@ void setup() {
   client.setServer(mqtt_server, 1883); // Setup du serveur
   client.setCallback(callback);
 
-  Serial.begin(9600);
   Wire.begin(4, 5);
   Wire.begin(I2C_ADDRESS_ME);
   Wire.onReceive(receiveI2C);
