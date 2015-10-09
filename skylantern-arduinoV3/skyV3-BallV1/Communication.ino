@@ -58,8 +58,14 @@ void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
+
+     // Create random name client
+    long nClient = random(10000); //Nombre random
+    char nameClient[20];
+    snprintf (nameClient, 20, "LanternClient%d", nClient);
+        
     // Attempt to connect
-    if (client.connect("ESP8266Client")) {
+    if (client.connect(nameClient)) {
       Serial.println("connected");
       // Once connected, publish an announcement...
       client.publish(lanternState, "ready"); //Envoi le statut de base

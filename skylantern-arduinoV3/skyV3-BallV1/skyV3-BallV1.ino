@@ -3,14 +3,12 @@
 #include <Adafruit_NeoPixel.h>
 #include <Color.h>
 
-//Add start function
-
-
+//LowBattery
+//LeaveMe
 
 // Update these with values suitable for your network.
-
 const char* ssid = "SkylanternBox"; //Nom du reseau
-const char* password = ""; // MDP du reseau
+const char* password = "Undefined"; // MDP du reseau
 const char* mqtt_server = "192.168.1.8"; //Ip du server
 
 //Setup Wifi et client
