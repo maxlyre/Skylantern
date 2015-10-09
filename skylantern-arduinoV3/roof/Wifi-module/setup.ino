@@ -1,9 +1,9 @@
 void setup_name(){
-  snprintf (motorState, 20, "Sky/%ld/motor", nomMotor); //Channel statut lantern
+  snprintf (motorState, 20, "Sky/%d/motor", nomMotor); //Channel statut lantern
   Serial.print("Channel motor statut : ");
   Serial.println(motorState);
 
-  snprintf (lanternState, 20, "Sky/%ld/lantern", nomMotor); //Channel statut lantern
+  snprintf (lanternState, 20, "Sky/%d/lantern", nomMotor); //Channel statut lantern
   Serial.print("Channel Lantern statut : ");
   Serial.println(lanternState);
   
@@ -30,33 +30,32 @@ void setup_wifi() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+  
+  bConnected =true;
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Message arrived [");
-  Serial.print(topic);
-  Serial.print("] ");
   for (int i = 0; i < length; i++) {
     Serial.print((char)payload[i]);
   }
   Serial.println();
-  
-  if(nameSetup){
-    Wire.beginTransmission(I2C_ADDRESS_OTHER);
-    Wire.write(payload,length);
-    Serial.print("Transfer vers trinket");
-    //Serial.println((char)payload);
-    Wire.endTransmission();
-  }
 }
 
 void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
     Serial.print("Attempting MQTT connection...");
-    // Attempt to connect
-    if (client.connect("ESP8266Client")) {
-      Serial.println("connected");
+    
+    // Create random name client
+    long nClient = random(10000); //Nombre random
+    char nameClient[20];
+    snprintf (nameClient, 20, "MotorClient%d", nClient); 
+    
+    //connection
+    if (client.connect(nameClient)) {
+      Serial.print("MQTT connected with Client :");
+      Serial.println(nameClient);
+      
       // ... and resubscribe
       client.subscribe(lanternState); //Choix du chanel de recuperation
     } else {
@@ -68,3 +67,10 @@ void reconnect() {
     }
   }
 }
+void wifiConnected(){
+  if(bConnected && nameSetup == false){
+    Serial.println("wificonnected");
+    delay(100);
+  }
+}
+
