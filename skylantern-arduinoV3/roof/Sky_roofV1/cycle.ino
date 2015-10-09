@@ -1,54 +1,58 @@
 
 
-void GoToStep1()
+void Up()
 {
   Serial.println("\tStep 2 : Up");
         stepperUp();
         irsensor = true;
-        
-        Wire.beginTransmission(I2C_ADDRESS_OTHER);
+        mySerial.println("up");
+       /* Wire.beginTransmission(I2C_ADDRESS_OTHER);
         Wire.write("up");
-        Wire.endTransmission();
+        Wire.endTransmission();*/
 }
 
-void GoToStep2()
+void Wait()
 {
     irsensor=false;
     Serial.println("Step 3 : Waiting");
     stepperStop();
-    timerStepper = timer.setTimeout(waitTime, GoToStep3);
-
-    Wire.beginTransmission(I2C_ADDRESS_OTHER);
+    timerStepper = timer.setTimeout(waitTime, Down);
+    mySerial.println("wait");
+    /*Wire.beginTransmission(I2C_ADDRESS_OTHER);
     Wire.write("fly");
-    Wire.endTransmission();
+    Wire.endTransmission();*/
 }
 
-void GoToStep3()
+void Down()
 {
     Serial.println("Step 4 : stepper Down");
     stepperDown();
     downState = true;
-    Wire.beginTransmission(I2C_ADDRESS_OTHER);
+   /* Wire.beginTransmission(I2C_ADDRESS_OTHER);
     Wire.write("down");
-    Wire.endTransmission(); 
+    Wire.endTransmission(); */
+    mySerial.println("down");
 }
 
-void GoToStep4()
-{
-   if(downState){
-     if (stepper.distanceToGo() == 0){
-      Wire.beginTransmission(I2C_ADDRESS_OTHER);
-      Wire.write("stop");
-      Wire.endTransmission(); 
-     }
-     downState=false;
-   }
-   Serial.println("Step 5 : Stop");
+void Stop()
+{ 
+  
+    if(downState){
+       if (stepper.distanceToGo() == 0){
+        /*Wire.beginTransmission(I2C_ADDRESS_OTHER);
+        Wire.write("stop");
+        Wire.endTransmission(); */
+    
+        downState=false;
+        Serial.println("Step 5 : Stop");
+        mySerial.println("stop");
+       }
+    }
 }
 //--------------------------------------- Ordre Moteur
 void stepperUp()
 {
-  stepper.setMaxSpeed(6000);
+  stepper.setMaxSpeed(8000);
   stepper.setAcceleration(2500); 
   stepper.move(-900000000);
 }
@@ -57,29 +61,34 @@ void stepperStop(){
   stepper.move(0); 
   stepper.setSpeed(0);
   stepper.runSpeed();
+  stepper.setCurrentPosition(0);
 }
 
 void stepperDown()
 {
-  stepper.setMaxSpeed(6000);
+  stepper.setMaxSpeed(8000);
   stepper.setAcceleration(2500);
   stepper.move(stepsdescente);
 }
+
 //--------------------------------------- IrSensor
 void irSensor(){
   
   if(irsensor){
-    int distancelantern= analogRead(8);
+    int distancelantern= analogRead(1);
     
-    if(distancelantern>250){
+    if(distancelantern>300){
       countpositif = countpositif+1;
     }else{
       countpositif=0;
     }
     
-    if(countpositif == 5){
+    if(countpositif == 5 ){ //&& motorReady
     Serial.println("Capteur On");
-      GoToStep2();
+      Wait();
+    }else if (countpositif == 5 && motorReady == false){
+      stepperDown();
+      
     }
     
     
@@ -87,4 +96,9 @@ void irSensor(){
   
 }
 
+void Setupbegin(){
+    stepperUp();
+    irsensor = true;
+
+}
 
