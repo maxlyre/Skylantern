@@ -4,8 +4,8 @@
 //Name variable
 int nomMotor = 0;
 boolean nameSetup = false;
-char motorState[20];
-char lanternState[20];
+char motorState[20]; //Nom du channel du moteur
+char lanternState[20]; //Nom du channel de la lantern
 
 // Update these with values suitable for your network.
 const char* ssid = "SkylanternBox"; //Nom du reseau

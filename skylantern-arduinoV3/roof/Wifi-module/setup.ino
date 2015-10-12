@@ -47,9 +47,8 @@ void reconnect() {
     Serial.print("Attempting MQTT connection...");
     
     // Create random name client
-    long nClient = random(10000); //Nombre random
     char nameClient[20];
-    snprintf (nameClient, 20, "MotorClient%d", nClient); 
+    snprintf (nameClient, 20, "MotorClient%d", nomMotor); 
     
     //connection
     if (client.connect(nameClient)) {
