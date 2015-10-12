@@ -47,10 +47,15 @@ void callback(char* topic, byte* payload, unsigned int length) {
   // Filtre suivant message
   if (inputString == "ready") {
     motorReady = true; //Active la lampe + Mpteur ready
-  } else if (inputString == "down" && fly){
+  } 
+  else if (inputString == "down" && fly){
     downState(); //Descente des lampe
   }else if (inputString == "stop" && fly){
     endState(); //Arret des moteurs en position basse
+  }else if (inputString =="warningON" && fly){
+    WarningState(true);
+  }else if(inputString == "warningOFF" && fly){
+    WarningState(false);
   }
 
 }

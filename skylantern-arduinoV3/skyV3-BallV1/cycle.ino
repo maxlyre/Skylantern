@@ -140,3 +140,41 @@ void endState(){
   Serial.println("Reset");
  }
 
+ void WarningState(boolean warningstate){
+  if( warningstate == true){
+    for(int i=0; i < NUMPIXELS; i++){   
+     pixels.setPixelColor(i,pixels.Color(255,0,0)); // we choose white
+     pixels.show(); // Initialize all pixels to 'off'
+   }
+   
+   int warningPulse = flyLight;
+   boolean warning = true;
+   
+     while(warning == true){
+        if(warningPulse >= flyLight){
+          sidePulse = false;
+          Serial.print("warning");
+        }else if(warningPulse <= minPulse){
+          sidePulse = true;
+        }
+        
+        if(sidePulse){
+          warningPulse = warningPulse + 8;
+        }else{
+          warningPulse = warningPulse - 8;
+        }
+        pixels.setBrightness(warningPulse);
+        pixels.show();
+        
+        client.loop(); // Recupere les messages dans le channel
+     }
+  }else if (warningstate == false && warning== true){
+      for(int i=0; i<NUMPIXELS;i++){
+         pixels.setPixelColor(i,pixels.Color(cur_color.red,cur_color.green,cur_color.blue)); 
+         pixels.setBrightness(flyLight);
+         pixels.show();
+       }
+      warning=false;
+  }
+ }
+

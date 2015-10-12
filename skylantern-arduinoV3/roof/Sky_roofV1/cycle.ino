@@ -6,7 +6,6 @@ void Up()
         stepperUp();
         irsensor = true;
         mySerial.println("up");
-        //warning = true;
 }
 
 void Wait()
@@ -34,8 +33,8 @@ void Stop()
             SetupMotor(3);
         }
         else if(warning==true){
-            warningcount = 0;
             Up();
+            mySerial.println("warningStop");
         }
         else{
           Serial.println("Step 5 : Stop");
@@ -48,7 +47,7 @@ void Stop()
 //--------------------------------------- Ordre Moteur
 void stepperUp()
 {
-  stepper.setMaxSpeed(9000);
+  stepper.setMaxSpeed(10000);
   stepper.setAcceleration(2500); 
   stepper.move(900000000);
 }
@@ -62,7 +61,7 @@ void stepperStop(){
 
 void stepperDown()
 {
-  stepper.setMaxSpeed(9000);
+  stepper.setMaxSpeed(10000);
   stepper.setAcceleration(2500);
   stepper.move(stepsdescente);
 }
@@ -82,7 +81,7 @@ void irSensor(){
     if(countpositif == 5 && motorReady){
     Serial.println("Capteur On");
       Wait();
-      warning=false;
+      warningcount=0;
     }else if (countpositif == 5 && motorReady == false){
       SetupMotor(2);
     }
@@ -118,18 +117,27 @@ void SetupMotor(int gotoStep){
 }
 
 void Warning(){
-      if(warning){
+
+      if(motorReady && irsensor){
           warningcount = warningcount + 30;
 
           if(warningcount > warningSetup){
-            Serial.println("Enter");
+              Serial.println("Warning");
+              mySerial.println("warningON");
+              stepperStop();
             
-            stepperStop();
-              stepper.setMaxSpeed(9000);
+              stepper.setMaxSpeed(10000);
               stepper.setAcceleration(2500);
-              stepper.move(20000);
-              downState = true;
-              warningcount=0;
+              //stepper.move(2000);
+              stepper.runToNewPosition(2000);
+              
+              Serial.println("Warning Stop");
+              mySerial.println("warningOFF");
+              Up();
+              /*downState = true;
+              warning = true;
+              irsensor = false;
+              warningcount=0;*/
           }
           
       }

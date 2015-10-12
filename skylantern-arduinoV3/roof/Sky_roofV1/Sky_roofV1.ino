@@ -34,7 +34,7 @@ boolean warning = false;
 boolean downState = false; //Active le calcul de distance
 boolean irsensor = false; //Active l'IR sensor
 boolean motorReady = false; //Active la lantern après mise en place
-
+int Step = 0;
 //Ir sensor 
 int distancelantern=0; //Distance de l'IR sensor
 int countpositif =0; //Compteur confirmation IR
@@ -55,7 +55,7 @@ void loop() {
     
      for(int i=0;i<30;i++){
      stepper.run();
-       if(motorReady==false && irSensor && warning){
+       if(motorReady == false && irSensor){
           warningSetup++;
        }
      }
