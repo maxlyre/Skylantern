@@ -37,17 +37,19 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("Message arrived [");
   Serial.print(topic);
   Serial.print("] ");
+  inputString="";
   for (int i = 0; i < length; i++) {
     Serial.print((char)payload[i]);
+    inputString += (char)payload[i];
   }
   Serial.println();
   
   // Filtre suivant message
-  if (payload[0] == 'r') {
+  if (inputString == "ready") {
     motorReady = true; //Active la lampe + Mpteur ready
-  } else if (payload[0] == 'd' && fly){
+  } else if (inputString == "down" && fly){
     downState(); //Descente des lampe
-  }else if (payload[0] == 's' && fly){
+  }else if (inputString == "stop" && fly){
     endState(); //Arret des moteurs en position basse
   }
 
@@ -60,9 +62,8 @@ void reconnect() {
     Serial.print("Attempting MQTT connection...");
 
      // Create random name client
-    long nClient = random(10000); //Nombre random
     char nameClient[20];
-    snprintf (nameClient, 20, "LanternClient%d", nClient);
+    snprintf (nameClient, 20, "LanternClient%d", nomLantern);
         
     // Attempt to connect
     if (client.connect(nameClient)) {

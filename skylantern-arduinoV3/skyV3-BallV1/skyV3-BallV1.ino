@@ -3,20 +3,29 @@
 #include <Adafruit_NeoPixel.h>
 #include <Color.h>
 
-//LowBattery
 //LeaveMe
 
-// Update these with values suitable for your network.
+//--------------------------------------------------Configuration
+
+//Nom Lantern
+int nomLantern = 0;
+
+//Light variable
+int minPulse =20; //Brightness Min du Pulse
+int maxPulse = 60; // Brightness Max du Pulse
+int flyLight = 120; // Brightness en vole
+
+//Configuration reseau
 const char* ssid = "SkylanternBox"; //Nom du reseau
 const char* password = "Undefined"; // MDP du reseau
 const char* mqtt_server = "192.168.1.8"; //Ip du server
 
+//--------------------------------------------------
+
 //Setup Wifi et client
 WiFiClient espClient;
 PubSubClient client(espClient);
-
-//Nom Lantern
-int nomLantern = 0;
+String inputString ="";
 
 //Nom Channel
 char lanternState[20];
@@ -31,9 +40,9 @@ boolean touch = false;
 int compteurTouch =0;
 
 //Pulse Variable
-int compteurPulse = 40;
+int compteurPulse = minPulse;
 boolean sidePulse = true;
-      
+    
 //Conversion Couleur
 Color cur_color = Color(1,1,1);
 float hue = 0;
@@ -56,7 +65,6 @@ int capacitiveResetcount = 0;
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-
 void setup() {
   Serial.begin(115200);
   
@@ -78,8 +86,8 @@ void setup() {
    
    //Led rouge en attedant l'initialisation des moteurs
    for(int i=0; i < NUMPIXELS; i++){   
-     pixels.setPixelColor(i,pixels.Color(255,0,0)); // we choose green
-     pixels.setBrightness(40);
+     pixels.setPixelColor(i,pixels.Color(0,255,0)); // we choose green
+     pixels.setBrightness(minPulse);
      pixels.show();
    }
 }

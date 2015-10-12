@@ -13,7 +13,7 @@ void stateManage(){
     colorChange();
     
     compteurTouch ++;
-    if(compteurTouch == 60){
+    if(compteurTouch == 50){
       client.publish(lanternState, "touch");
       Serial.println("compteurOK");
       cycle = true;
@@ -56,7 +56,7 @@ void colorChange(){
 
 //----------------------------- couleur
 void rainbow(){
-  hue += 0.001;
+  hue += 0.003
   if ( hue >=1 ) hue = 0.01;
   sat = 1.0;
   val = 0.4;
@@ -78,7 +78,7 @@ void flyState(){
       Serial.println("Fly");
      
      //Allume lantern
-      for(int i=compteurPulse; i<200;i++){
+      for(int i=compteurPulse; i<flyLight;i++){
        pixels.setBrightness(i);
        pixels.show();
        delay(10);
@@ -89,10 +89,10 @@ void flyState(){
 
 //----------------------------- Baisse la luminosité
 void downState() {
-   for(int i=200; i>40; i--){ 
+   for(int i=flyLight; i>compteurPulse; i--){ 
      pixels.setBrightness(i);
      pixels.show();
-     delay(10);
+     delay(20);
    }
    Serial.println("light low");
 
@@ -117,10 +117,10 @@ void endState(){
      pixels.show(); // Initialize all pixels to 'off'
    }
 
-    if(compteurPulse >= 100){
+    if(compteurPulse >= maxPulse){
       sidePulse = false;
       Serial.print("wave");
-    }else if(compteurPulse <= 40){
+    }else if(compteurPulse <= minPulse){
       sidePulse = true;
     }
     
