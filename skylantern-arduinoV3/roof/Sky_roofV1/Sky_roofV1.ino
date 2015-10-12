@@ -2,14 +2,14 @@
 #include <SimpleTimer.h>
 #include <SoftwareSerial.h>
 
-
-// Créer function routine (send ready when finish)
 //Créer function timer (si la boule ne monte pas après X seconde).
-//Huzzah : change client
 
+//--------------------------------------------------Configuration
 char nomMotor = 0; //numero du groupe; 
-long stepsdescente = 10000; //distance vers le bas
-int waitTime = 2000; //Temps en haut
+long stepsdescente = -45000; //distance vers le bas
+int waitTime = 20000; //Temps en haut
+
+//--------------------------------------------------Configuration
 
 //Config Timer
 SimpleTimer timer;
@@ -26,6 +26,10 @@ SoftwareSerial mySerial(9, 10);//RX, TX
 //Setup Timer
 int timerStepper;
 
+int warningcount = 0;
+int warningSetup = 0;
+boolean warning = false;
+
 //Boolean activation
 boolean downState = false; //Active le calcul de distance
 boolean irsensor = false; //Active l'IR sensor
@@ -38,12 +42,11 @@ int countpositif =0; //Compteur confirmation IR
 void setup() {
   mySerial.begin(9600);
   Serial.begin(9600);
-  
-  //Setupbegin();
 
+  //Setup Stepper
   pinMode(stepperEnable, OUTPUT);
   digitalWrite(stepperEnable, LOW);
-  stepper.setMaxSpeed(6000);
+  stepper.setMaxSpeed(9000);
   stepper.setAcceleration(4000);
 }
 
@@ -52,12 +55,17 @@ void loop() {
     
      for(int i=0;i<30;i++){
      stepper.run();
+       if(motorReady==false && irSensor && warning){
+          warningSetup++;
+       }
      }
-     
+      
+    //Activateur
     irSensor();
-    
     Stop();
+    Warning();
 
+    //Gestion message
    serialEvent(); //call the function
    ManageMessage(); //Trie new message
 }

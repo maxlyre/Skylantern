@@ -7,12 +7,11 @@ void ManageMessage(){
     if(inputString.equals("wificonnected")){
       Serial.println("envoi nom");
       setupName();
+      SetupMotor(1);
     }
-    if(inputString == "fly"){
+    if(inputString == "fly" && motorReady){
       Up();
-      delay(200);
-      Serial.write("answer,");
-     }
+    }
      
     // clear the string: 
     inputString = "";
