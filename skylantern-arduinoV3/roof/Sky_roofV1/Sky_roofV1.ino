@@ -5,8 +5,8 @@
 //Créer function timer (si la boule ne monte pas après X seconde).
 
 //--------------------------------------------------Configuration
-char nomMotor = 0; //numero du groupe; 
-long stepsdescente = -45000; //distance vers le bas
+char nomMotor = 1; //numero du groupe; 
+long stepsdescente = -125000; //distance vers le bas
 int waitTime = 20000; //Temps en haut
 
 //--------------------------------------------------Configuration
@@ -17,8 +17,11 @@ SimpleTimer timer;
 //Config Stepper
 AccelStepper stepper(1, 6, 5);
 #define stepperEnable 8
+long warningSetup = 0;
+int warningcount = 0;
+boolean warning = false;
 
-//Config I2C
+//Config Serial
 String inputString ="";
 boolean stringComplete = false;  // whether the string is complete
 SoftwareSerial mySerial(9, 10);//RX, TX
@@ -26,9 +29,7 @@ SoftwareSerial mySerial(9, 10);//RX, TX
 //Setup Timer
 int timerStepper;
 
-int warningcount = 0;
-int warningSetup = 0;
-boolean warning = false;
+
 
 //Boolean activation
 boolean downState = false; //Active le calcul de distance
@@ -53,13 +54,10 @@ void setup() {
 void loop() {
     timer.run();
     
-     for(int i=0;i<30;i++){
+     for(int i=0;i<60;i++){
      stepper.run();
-       if(motorReady == false && irSensor){
-          warningSetup++;
-       }
      }
-      
+
     //Activateur
     irSensor();
     Stop();

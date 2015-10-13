@@ -47,8 +47,8 @@ void Stop()
 //--------------------------------------- Ordre Moteur
 void stepperUp()
 {
-  stepper.setMaxSpeed(10000);
-  stepper.setAcceleration(2500); 
+  stepper.setMaxSpeed(20000);
+  stepper.setAcceleration(4000); 
   stepper.move(900000000);
 }
 
@@ -61,8 +61,8 @@ void stepperStop(){
 
 void stepperDown()
 {
-  stepper.setMaxSpeed(10000);
-  stepper.setAcceleration(2500);
+  stepper.setMaxSpeed(20000);
+  stepper.setAcceleration(4000);
   stepper.move(stepsdescente);
 }
 
@@ -102,6 +102,9 @@ void SetupMotor(int gotoStep){
     case 2:
       Serial.println("Setup step 2");
       mySerial.println("Setup step 2");
+      warningSetup = stepper.distanceToGo() - 20000;
+      Serial.print("Warning Setup = ");
+      Serial.println(warningSetup);
       stepperStop();
       stepperDown();
       irsensor = false;
@@ -111,35 +114,32 @@ void SetupMotor(int gotoStep){
       Serial.println("ready");
       mySerial.println("ready");
       motorReady = true;
-      warningSetup = warningSetup + 5000;
+      
       break; 
   }
 }
 
 void Warning(){
-
+      
       if(motorReady && irsensor){
-          warningcount = warningcount + 30;
-
-          if(warningcount > warningSetup){
+          warningSetup = stepsdescente - 20000;
+          if(stepper.distanceToGo() < warningSetup ){
               Serial.println("Warning");
               mySerial.println("warningON");
               stepperStop();
             
-              stepper.setMaxSpeed(10000);
-              stepper.setAcceleration(2500);
-              //stepper.move(2000);
-              stepper.runToNewPosition(2000);
+              stepper.setMaxSpeed(20000);
+              stepper.setAcceleration(4000);
+              stepper.runToNewPosition(-10000);
               
               Serial.println("Warning Stop");
               mySerial.println("warningOFF");
               Up();
               /*downState = true;
               warning = true;
-              irsensor = false;
-              warningcount=0;*/
+              irsensor = false;*/
+              warningcount=0;
           }
           
       }
 }
-
