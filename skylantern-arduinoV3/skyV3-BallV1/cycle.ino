@@ -26,7 +26,7 @@ void stateManage(){
   }
 
   //Action
-  if (touch == false && cycle == true && fly == false) {//----- S'envole 
+  if (touch == false && cycle == true) {//----- S'envole 
     capacitiveResetcount = 0;
     flyState();    
   } 
@@ -40,7 +40,9 @@ void stateManage(){
         capacitiveReset();
         capacitiveResetcount = 0;
     }
-  } 
+  }
+  
+  WarningState();
 }
 
 //----------------------------- Couleur de la lantern change
@@ -56,7 +58,7 @@ void colorChange(){
 
 //----------------------------- couleur
 void rainbow(){
-  hue += 0.003
+  hue += 0.003;
   if ( hue >=1 ) hue = 0.01;
   sat = 1.0;
   val = 0.4;
@@ -86,16 +88,15 @@ void flyState(){
      
 }
 
-
 //----------------------------- Baisse la luminosité
 void downState() {
-   for(int i=flyLight; i>compteurPulse; i--){ 
+   for(int i=flyLight; i>maxPulse; i--){ 
      pixels.setBrightness(i);
      pixels.show();
      delay(20);
    }
    Serial.println("light low");
-
+   compteurPulse = maxPulse;
    capacitiveReset();
 }
 //----------------------------- Remet au blanc
@@ -123,12 +124,12 @@ void endState(){
     }else if(compteurPulse <= minPulse){
       sidePulse = true;
     }
-    
     if(sidePulse){
       compteurPulse++;
     }else{
       compteurPulse--;
     }
+    delay(5);
     pixels.setBrightness(compteurPulse);
     pixels.show();
  }
@@ -140,39 +141,30 @@ void endState(){
   Serial.println("Reset");
  }
 
- void WarningState(boolean warningstate){
-  if( warningstate == true){
+ void WarningState(){
+  Serial.println("Warning Enter");
+ if(warningstate == true){
     for(int i=0; i < NUMPIXELS; i++){   
      pixels.setPixelColor(i,pixels.Color(255,0,0)); // we choose white
      pixels.show(); // Initialize all pixels to 'off'
+     delay(5);
    }
-   
-   int warningPulse = flyLight;
-   boolean warning = true;
-   
-     while(warning == true){
-        if(warningPulse >= flyLight){
-          sidePulse = false;
-          Serial.print("warning");
-        }else if(warningPulse <= minPulse){
-          sidePulse = true;
-        }
-        
-        if(sidePulse){
-          warningPulse = warningPulse + 8;
-        }else{
-          warningPulse = warningPulse - 8;
-        }
-        pixels.setBrightness(warningPulse);
+    //Serial.println("Warning True");
+      warning = true;   
+        pixels.setBrightness(minPulse);
         pixels.show();
+        delay(40);
+        pixels.setBrightness(flyLight);
+        pixels.show();
+        delay(40);
         
-        client.loop(); // Recupere les messages dans le channel
-     }
   }else if (warningstate == false && warning== true){
+      //Serial.println("Warning End");
       for(int i=0; i<NUMPIXELS;i++){
          pixels.setPixelColor(i,pixels.Color(cur_color.red,cur_color.green,cur_color.blue)); 
          pixels.setBrightness(flyLight);
          pixels.show();
+         delay(20);
        }
       warning=false;
   }

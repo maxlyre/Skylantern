@@ -43,6 +43,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     inputString += (char)payload[i];
   }
   Serial.println();
+  inputString.trim();
   
   // Filtre suivant message
   if (inputString == "ready") {
@@ -53,9 +54,9 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }else if (inputString == "stop" && fly){
     endState(); //Arret des moteurs en position basse
   }else if (inputString =="warningON" && fly){
-    WarningState(true);
+    warningstate = true;
   }else if(inputString == "warningOFF" && fly){
-    WarningState(false);
+    warningstate = false;
   }
 
 }
@@ -68,7 +69,7 @@ void reconnect() {
 
      // Create random name client
     char nameClient[20];
-    snprintf (nameClient, 20, "LanternClient%d", nomLantern);
+    snprintf(nameClient, 20, "LanternClient%d", nomLantern);
         
     // Attempt to connect
     if (client.connect(nameClient)) {

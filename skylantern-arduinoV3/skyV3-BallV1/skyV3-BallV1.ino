@@ -8,7 +8,7 @@
 //--------------------------------------------------Configuration
 
 //Nom Lantern
-int nomLantern = 0;
+int nomLantern = 1;
 
 //Light variable
 int minPulse =20; //Brightness Min du Pulse
@@ -33,10 +33,12 @@ char lanternColor[20];
 char motorState[20];
 
 //Bolean Cycle
-boolean motorReady = false;
+boolean motorReady = true;
 boolean cycle = false;
 boolean fly = false;
 boolean touch = false;
+boolean warning = false;
+boolean warningstate = false;
 int compteurTouch =0;
 
 //Pulse Variable
